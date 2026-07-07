@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nyathani HariHaran — Software Engineer</title>
+  <meta name="description"
+    content="Software Engineer — Python, FastAPI, React, Flutter. Builder of dsabot.in and mytimer.in." />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚡</text></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <!-- ======== chrome ======== -->
+  <div class="grain" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true">
+    <div class="progress__bar" id="progressBar"></div>
+  </div>
+  <div class="cursor" aria-hidden="true" id="cursor"><span class="cursor__label" id="cursorLabel"></span></div>
+  <div class="cursor-dot" aria-hidden="true" id="cursorDot"></div>
+
+  <header class="header">
+    <a href="#hero" class="header__logo magnetic" data-scroll-to>NH<span class="accent">.</span></a>
+    <nav class="header__nav mono">
+      <a href="#work" class="magnetic" data-scroll-to>work</a>
+      <a href="#experience" class="magnetic" data-scroll-to>experience</a>
+      <a href="#contact" class="magnetic" data-scroll-to>contact</a>
+    </nav>
+    <a href="mailto:harinyathani10@gmail.com" class="header__cta mono magnetic">
+      <span class="pulse-dot"></span>available for work
+    </a>
+  </header>
+
+  <main>
+
+    <!-- ======== 01 / HERO ======== -->
+    <section class="hero" id="hero">
+      <div class="hero__pin">
+
+        <!-- code block revealed behind the name -->
+        <div class="hero__code mono" id="heroCode" aria-hidden="true">
+          <div class="codewin">
+            <div class="codewin__bar">
+              <span class="codewin__dot"></span><span class="codewin__dot"></span><span class="codewin__dot"></span>
+              <span class="codewin__title">architecture.py — dsabot.in</span>
+            </div>
+            <pre
+              class="codewin__body"><code><span class="code-line"><span class="c"># multi-user backend · 4-stage NLP pipeline</span></span>
+<span class="code-line"><span class="k">async def</span> <span class="f">resolve_submission</span>(msg: <span class="t">Message</span>) -&gt; <span class="t">Log</span>:</span>
+<span class="code-line">    parsed  = nlp.<span class="f">extract</span>(msg.content)          <span class="c"># RapidFuzz · regex</span></span>
+<span class="code-line">    problem = <span class="k">await</span> registry.<span class="f">resolve</span>(parsed)    <span class="c"># LeetCode · Codeforces</span></span>
+<span class="code-line">    log     = <span class="k">await</span> db.<span class="f">commit_log</span>(problem, user=msg.author)</span>
+<span class="code-line">    <span class="k">await</span> srs.<span class="f">schedule_review</span>(log)              <span class="c"># spaced repetition</span></span>
+<span class="code-line">    <span class="k">await</span> coach.<span class="f">gemini_feedback</span>(log)            <span class="c"># AI coaching</span></span>
+<span class="code-line">    <span class="k">return</span> log  <span class="c"># → PostgreSQL · async · Dockerized</span></span></code></pre>
+          </div>
+        </div>
+
+        <!-- the doors -->
+        <div class="hero__type">
+          <p class="hero__eyebrow mono" id="heroEyebrow">NYATHANI — SOFTWARE ENGINEER</p>
+          <h1 class="hero__name" id="heroName" aria-label="HariHaran">HARIHARAN</h1>
+          <p class="hero__sub mono" id="heroSub">python · fastapi · react · flutter · postgresql</p>
+        </div>
+
+        <div class="hero__hint mono" id="heroHint">
+          <span>scroll to open</span>
+          <span class="hero__hint-line"></span>
+        </div>
+
+        <div class="hero__corner mono" id="heroCornerL">HYD, IN<br />17.38°N 78.48°E</div>
+        <div class="hero__corner hero__corner--r mono" id="heroCornerR">EST. 2024<br />B.TECH CS</div>
+      </div>
+    </section>
+
+    <!-- ======== 02 / STATEMENT ======== -->
+    <section class="statement" id="statement">
+      <div class="statement__pin">
+        <p class="statement__label mono">01 — WHO I AM</p>
+        <p class="statement__text" id="statementText">I engineered my way from operations into software, independently
+          shipping a <em>30K+ LOC</em> cross-platform DSA platform and a production tool used by <em>40+ people
+            daily</em>, while training in <em>AI &amp; LLM workflows</em> on a Google-client initiative at Cognizant.
+          <em>150+ DSA problems</em> deep and still counting.</p>
+      </div>
+    </section>
+
+    <!-- ======== 03 / PROJECT 1 — DSA PLATFORM ======== -->
+    <section class="proj1" id="work">
+      <div class="proj1__pin">
+        <p class="section-label mono"><span class="accent">02</span> — SELECTED WORK / 01</p>
+
+        <div class="glass-card" id="dsaCard">
+          <div class="glass-card__head">
+            <div>
+              <h2 class="glass-card__title">DSA Accountability<br />Platform</h2>
+              <p class="glass-card__sub mono">web · mobile · discord bot — <a class="accent-link magnetic"
+                  href="https://dsabot.in" target="_blank" rel="noopener">dsabot.in</a></p>
+            </div>
+            <span class="glass-card__year mono">2026</span>
+          </div>
+
+          <div class="heatmap" id="heatmap" aria-label="Contribution activity heatmap"></div>
+          <p class="heatmap__caption mono">discord messages → 4-stage NLP → structured logs → SRS review queue</p>
+
+          <div class="tags" id="dsaTags">
+            <span class="tag mono">Python</span>
+            <span class="tag mono">FastAPI</span>
+            <span class="tag mono">Flutter</span>
+            <span class="tag mono">GraphQL</span>
+            <span class="tag mono">PostgreSQL</span>
+            <span class="tag mono">Docker</span>
+          </div>
+
+          <div class="metrics" id="dsaMetrics">
+            <div class="metric">
+              <span class="metric__num"><span data-count="30" data-suffix="K+">0K+</span></span>
+              <span class="metric__cap mono">lines of code</span>
+            </div>
+            <div class="metric">
+              <span class="metric__num"><span data-count="4" data-suffix="">0</span></span>
+              <span class="metric__cap mono">stage NLP pipeline</span>
+            </div>
+            <div class="metric">
+              <span class="metric__num"><span data-count="1" data-prefix="&lt;" data-suffix="ms">&lt;0ms</span></span>
+              <span class="metric__cap mono">cold-start render</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== 04 / PROJECT 2 — MYTIMER ======== -->
+    <section class="proj2">
+      <div class="proj2__pin">
+        <p class="section-label mono"><span class="accent">03</span> — SELECTED WORK / 02</p>
+
+        <div class="proj2__stage">
+          <!-- phase A: the ring -->
+          <div class="ring-wrap" id="ringWrap">
+            <svg class="ring" viewBox="0 0 300 300" aria-hidden="true">
+              <circle class="ring__track" cx="150" cy="150" r="130" />
+              <circle class="ring__fill" id="ringFill" cx="150" cy="150" r="130" />
+            </svg>
+            <div class="ring__center">
+              <span class="ring__pct mono" id="ringPct">00%</span>
+              <span class="ring__cap mono">session progress</span>
+            </div>
+          </div>
+
+          <!-- phase B: the terminal -->
+          <div class="term" id="term">
+            <div class="term__bar mono">
+              <span class="codewin__dot"></span><span class="codewin__dot"></span><span class="codewin__dot"></span>
+              <span class="codewin__title">mytimer.in — production</span>
+            </div>
+            <div class="term__body mono">
+              <p class="term__line" id="t1"><span class="accent">$</span> mytimer --stats</p>
+              <p class="term__line" id="t2">├─ daily_active_users ..... <span class="accent big-stat"><span
+                    data-count="40" data-suffix="+">0+</span></span></p>
+              <p class="term__line" id="t3">├─ modes .................. countdown · stopwatch · pomodoro</p>
+              <p class="term__line" id="t4">├─ picture_in_picture ..... always-on-top floating windows</p>
+              <p class="term__line" id="t5">├─ stack .................. vanilla JS · zero dependencies</p>
+              <p class="term__line" id="t6">└─ spreadsheets_replaced .. <span class="accent">all of them</span></p>
+              <h3 class="term__title">MyTimer<span class="accent">.in</span></h3>
+              <p class="term__sub mono">productivity timer &amp; utilization tracker — adopted by 40+ operators at
+                Cognizant — <a class="accent-link magnetic" href="https://mytimer.in" target="_blank"
+                  rel="noopener">mytimer.in</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== 05 / EXPERIENCE ======== -->
+    <section class="exp" id="experience">
+      <p class="section-label mono exp__label"><span class="accent">04</span> — EXPERIENCE</p>
+
+      <div class="exp__rail">
+        <div class="exp__line">
+          <div class="exp__line-fill" id="expLineFill"></div>
+        </div>
+        <div class="exp__node" id="expNode"></div>
+
+        <article class="exp-card" data-exp>
+          <p class="exp-card__date mono">JUL 2025 — PRESENT</p>
+          <h3 class="exp-card__role">Process Executive — Prompt Factory</h3>
+          <p class="exp-card__org mono accent">Cognizant · Hyderabad</p>
+          <ul class="exp-card__list">
+            <li>Shipped <strong>mytimer.in</strong> internally — adopted by 40+ operators, killing manual spreadsheet
+              tracking.</li>
+            <li>Processed <strong>50,000+</strong> content-review transactions within SLA &amp; policy compliance.</li>
+            <li>Selected for an AI-ops initiative on a <strong>Google client engagement</strong> — trained in Prompt
+              Engineering, RAG &amp; NLP; analyzing workflow exceptions to drive AI-assisted automation.</li>
+          </ul>
+        </article>
+
+        <article class="exp-card exp-card--right" data-exp>
+          <p class="exp-card__date mono">MAY 2024 — AUG 2024</p>
+          <h3 class="exp-card__role">Full Stack Development Intern</h3>
+          <p class="exp-card__org mono accent">Teachnook · Hyderabad</p>
+          <ul class="exp-card__list">
+            <li>Built full-stack apps with <strong>Node.js, Express &amp; MongoDB</strong> — JWT auth, RESTful APIs,
+              responsive UI, cloud-deployed.</li>
+          </ul>
+        </article>
+
+        <article class="exp-card" data-exp>
+          <p class="exp-card__date mono">2020 — 2024</p>
+          <h3 class="exp-card__role">B.Tech, Computer Science</h3>
+          <p class="exp-card__org mono accent">Kakatiya Institute of Technology &amp; Science · Warangal</p>
+          <ul class="exp-card__list">
+            <li>Fundamentals in DSA, OOP, DBMS &amp; systems — <strong>150+ problems</strong> solved via Striver's A2Z
+              sheet.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ======== 06 / SKILLS MARQUEE ======== -->
+    <section class="skills" aria-label="Technical skills">
+      <div class="skills__row" id="marqueeA">
+        <span class="skills__item">Python</span><span class="skills__sep">✦</span>
+        <span class="skills__item">FastAPI</span><span class="skills__sep">✦</span>
+        <span class="skills__item">React</span><span class="skills__sep">✦</span>
+        <span class="skills__item">Flutter</span><span class="skills__sep">✦</span>
+        <span class="skills__item">PostgreSQL</span><span class="skills__sep">✦</span>
+        <span class="skills__item">GraphQL</span><span class="skills__sep">✦</span>
+        <span class="skills__item">Docker</span><span class="skills__sep">✦</span>
+        <span class="skills__item">SQL</span><span class="skills__sep">✦</span>
+      </div>
+      <div class="skills__row skills__row--alt" id="marqueeB">
+        <span class="skills__item">REST APIs</span><span class="skills__sep">✦</span>
+        <span class="skills__item">JWT Auth</span><span class="skills__sep">✦</span>
+        <span class="skills__item">CI/CD</span><span class="skills__sep">✦</span>
+        <span class="skills__item">Discord.py</span><span class="skills__sep">✦</span>
+        <span class="skills__item">Pandas</span><span class="skills__sep">✦</span>
+        <span class="skills__item">MongoDB</span><span class="skills__sep">✦</span>
+        <span class="skills__item">RAG</span><span class="skills__sep">✦</span>
+        <span class="skills__item">Prompt Engineering</span><span class="skills__sep">✦</span>
+      </div>
+    </section>
+
+    <!-- ======== 07 / CONTACT ======== -->
+    <section class="contact" id="contact">
+      <p class="section-label mono"><span class="accent">05</span> — NEXT</p>
+
+      <a href="mailto:harinyathani10@gmail.com" class="contact__big magnetic" id="contactBig"
+        aria-label="Let's build — email me">
+        <span class="contact__line1">LET'S</span>
+        <span class="contact__line2">BUILD<span class="accent">.</span></span>
+        <span class="contact__underline" id="contactUnderline"></span>
+      </a>
+
+      <div class="contact__links mono" id="contactLinks">
+        <a class="contact__link magnetic" href="mailto:harinyathani10@gmail.com">harinyathani10@gmail.com<span
+            class="contact__arrow">↗</span></a>
+        <a class="contact__link magnetic" href="tel:+916301108882">+91 63011 08882<span
+            class="contact__arrow">↗</span></a>
+        <a class="contact__link magnetic" href="https://github.com/HariNyathani" target="_blank"
+          rel="noopener">github/HariNyathani<span class="contact__arrow">↗</span></a>
+        <a class="contact__link magnetic" href="https://www.linkedin.com/in/hari-haran-nyathani-867959301/"
+          target="_blank" rel="noopener">linkedin/hari-haran-nyathani<span class="contact__arrow">↗</span></a>
+      </div>
+
+      <footer class="footer mono">
+        <span>© 2026 Nyathani HariHaran</span>
+        <span>Hyderabad, India</span>
+        <span>designed &amp; engineered by hand<span class="accent"> ⚡</span></span>
+      </footer>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
