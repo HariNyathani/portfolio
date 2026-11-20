@@ -145,37 +145,7 @@
 
   syncMotion(false);
   motionQuery.addEventListener("change", () => syncMotion(true));
-  // Enter on a focused anchor focuses its target. At a fragment landing, hand
-  // focus back to <body> so the link that was left behind is never visible.
-  const releaseFragmentLink = () => {
-    const landing = location.hash && document.getElementById(location.hash.slice(1));
-    if (landing && document.activeElement === landing && document.activeElement.matches("a[href^='#']")) document.activeElement.blur();
-  };
-  // Lenis restarts scroll processing after a click, which can blur a keyboard
-  // fragment target back to <body>. Put focus back on it in that case only.
-  let previousFocus = document.activeElement;
 
-  // Navigating to the page's own fragment focuses its first anchor on the very
-  // next frame. Clear that automatic focus, but leave any link the user reached
-  // by keyboard (or our skip link) focused, so it is never revealed by accident
-  // and never taken away from someone who needs it.
-  let userMovedFocus = false;
-  let autoFocusReleased = false;
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Tab" || event.key === "Enter" || event.key === " ") userMovedFocus = true;
-  });
-  document.addEventListener("focusin", (event) => {
-    if (autoFocusReleased || userMovedFocus || !(event.target instanceof HTMLAnchorElement)) return;
-    if (!event.target.closest("main a[href^='#']")) return;
-    autoFocusReleased = true;
-    event.target.blur();
-  });
-  // Some engines reveal and focus again after this frame; confirm once more.
-  window.addEventListener("load", () => {
-    const first = document.querySelector("main a[href^='#']:not(.skip-link)");
-    if (first?.hasAttribute("autofocus") || (document.activeElement === first && !userMovedFocus)) document.activeElement?.blur?.();
-  }, { once: true });
-  window.addEventListener("hashchange", () => requestAnimationFrame(releaseFragmentLink));
   window.addEventListener("scroll", rememberSection, { passive: true });
   window.addEventListener("load", () => {
     if (context) ScrollTrigger.refresh();
