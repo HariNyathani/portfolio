@@ -508,12 +508,65 @@
     }, {});
 
     const labelFor = (el) => {
+      if (el.hasAttribute("data-copy-email")) return "COPY";
       const href = el.getAttribute("href") || "";
       if (href.startsWith("mailto:")) return "SAY HI";
       if (href.startsWith("tel:")) return "CALL";
       if (href.startsWith("http")) return "OPEN";
       return "GO";
     };
+
+    // Contact: a mailto: link hands the visitor to whatever mail client the OS
+    // registered (Thunderbird, Outlook), which is not what most people want.
+    // Gmail in the browser is used on desktop; iOS browsers cannot open a Gmail
+    // compose URL, so they keep the native mail app. Every branch opens a
+    // compose window only — nothing is ever sent.
+    const GMAIL_TO = "harinyathani10@gmail.com";
+    const gmailCompose = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(GMAIL_TO)}`;
+    const gmailIntent = `intent://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(GMAIL_TO)}#Intent;scheme=https;package=com.google.android.gm;S.browser_fallback_url=${encodeURIComponent(gmailCompose)};end`;
+    const android = /Android/i.test(navigator.userAgent);
+    document.querySelectorAll("a[data-mail]").forEach((link) => {
+      // Desktop: open Gmail compose in a new tab. Modified clicks (new tab,
+      // middle click) keep the plain link. Android: hand the URL to the Gmail
+      // app through an intent, falling back to the browser compose URL.
+      const open = (event) => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button > 0) return;
+        if (android) {
+          event.preventDefault();
+          window.location.href = gmailIntent;
+          return;
+        }
+        event.preventDefault();
+        window.open(gmailCompose, "_blank", "noopener");
+      };
+      link.addEventListener("click", open);
+    });
+
+    // Copy fallback for visitors without a Gmail account in this browser.
+    document.querySelectorAll("[data-copy-email]").forEach((button) => {
+      const reset = () => {
+        window.clearTimeout(button._copyTimer);
+        button._copyTimer = window.setTimeout(() => {
+          button.removeAttribute("data-copied");
+          button.querySelector("[data-copy-label]").textContent = "copy email";
+        }, 2200);
+      };
+      button.addEventListener("click", async () => {
+        const address = button.getAttribute("data-copy-email");
+        let copied = false;
+        try { await navigator.clipboard.writeText(address); copied = true; }
+        catch (error) {
+          const field = document.createElement("textarea");
+          field.value = address; field.setAttribute("readonly", ""); field.style.position = "fixed"; field.style.opacity = "0";
+          document.body.appendChild(field); field.select();
+          try { copied = document.execCommand("copy"); } catch (ignored) { copied = false; }
+          field.remove();
+        }
+        button.setAttribute("data-copied", "");
+        button.querySelector("[data-copy-label]").textContent = copied ? "copied ✓" : "press ctrl+c";
+        reset();
+      });
+    });
 
     document.querySelectorAll("a, button").forEach((el) => {
       on(el, "mouseenter", () => {

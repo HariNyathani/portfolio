@@ -66,7 +66,8 @@
       <a href="#experience" class="magnetic">experience</a>
       <a href="#contact" class="magnetic">contact</a>
     </nav>
-    <a href="mailto:harinyathani10@gmail.com" class="header__cta mono magnetic">
+    <a href="mailto:harinyathani10@gmail.com" data-mail class="header__cta mono magnetic"
+      aria-label="Available for work — email me">
       <span class="pulse-dot"></span>available for work
     </a>
   </header>
@@ -286,7 +287,7 @@
     <section class="contact" id="contact" tabindex="-1">
       <p class="section-label mono"><span class="accent">05</span> — NEXT</p>
 
-      <a href="mailto:harinyathani10@gmail.com" class="contact__big magnetic" id="contactBig"
+      <a href="mailto:harinyathani10@gmail.com" class="contact__big magnetic" id="contactBig" data-mail
         aria-label="Let's build — email me">
         <span class="contact__line1">LET'S</span>
         <span class="contact__line2">BUILD<span class="accent">.</span></span>
@@ -294,9 +295,12 @@
       </a>
 
       <div class="contact__links mono" id="contactLinks">
-        <a class="contact__link magnetic" href="mailto:harinyathani10@gmail.com">harinyathani10@gmail.com<span
+        <a class="contact__link magnetic" data-mail href="mailto:harinyathani10@gmail.com">harinyathani10@gmail.com<span
             class="contact__arrow">↗</span></a>
-        <a class="contact__link magnetic" href="tel:+916301108882">+91 63011 08882<span
+        <button class="contact__link magnetic" type="button" data-copy-email="harinyathani10@gmail.com"
+          aria-label="Copy email address harinyathani10@gmail.com">
+          <span data-copy-label>copy email</span><span class="contact__arrow" aria-hidden="true">⧉</span></button>
+        <a class="contact__link magnetic" href="tel:+916****8882">+91 63011 08882<span
             class="contact__arrow">↗</span></a>
         <a class="contact__link magnetic" href="https://github.com/HariNyathani" target="_blank"
           rel="noopener">github/HariNyathani<span class="contact__arrow">↗</span></a>

@@ -586,6 +586,12 @@ html.boot-stalled .hero__code[data-static] { position: relative; inset: auto; vi
   border-color: rgba(0, 255, 136, 0.4);
   background: var(--accent-dim);
 }
+.contact__link[data-copy-email] {
+  font: inherit; letter-spacing: inherit; color: var(--muted);
+  background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none;
+}
+.contact__link[data-copy-email]:hover { color: var(--accent); }
+.contact__link[data-copy-email][data-copied] { color: var(--accent); border-color: rgba(0, 255, 136, 0.4); }
 .contact__arrow { font-size: 0.9em; }
 
 .footer {
