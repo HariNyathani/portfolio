@@ -41,11 +41,19 @@ a { color: inherit; text-decoration: none; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .skip-link {
   position: fixed; z-index: 250; top: 0.8rem; left: 1rem;
-  padding: 0.6rem 0.85rem; border-radius: 0.5rem;
+  padding: 0; border: 0;
   background: var(--bg); color: var(--accent);
-  transform: translateY(calc(-100% - 1rem));
+  /* Hidden by clipping, not by moving: no box on screen, no layout shift. */
+  width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+  white-space: nowrap;
 }
-.skip-link:focus { transform: none; }
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  width: auto; height: auto; overflow: visible; clip-path: none;
+  padding: 0.6rem 0.85rem; border: 1px solid var(--stroke); border-radius: 0.5rem;
+}
+html.boot-stalled .hero__code[data-static] { position: relative; inset: auto; visibility: visible; opacity: 1; }
 .glass-card:has(:focus-visible), .term:has(:focus-visible), .term:has(:focus-visible) .term__body > * {
   opacity: 1 !important;
   transform: none !important;
@@ -210,7 +218,14 @@ a { color: inherit; text-decoration: none; }
   display: flex; align-items: center; justify-content: center;
   padding: 1rem;
 }
+/* Every path that may reveal the code window places it behind the name.
+   The static stacked hero is opted into explicitly (js-static or no JS scripts). */
+.js-motion .hero__code,
 .has-motion .hero__code { position: absolute; inset: 0; }
+.js-motion .hero__type,
+.has-motion .hero__type { position: relative; }
+.js-motion .hero__pin,
+.has-motion .hero__pin { flex-direction: row; }
 .codewin {
   width: min(760px, 92vw);
   background: rgba(13, 13, 16, 0.92);
@@ -660,14 +675,16 @@ a { color: inherit; text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
   .grain, .hero__hint-line, .pulse-dot { animation: none; }
 }
-html:not(.has-motion) .hero__pin {
+html:not(.has-motion):is(.js-static, :not(.is-booting)) .hero__pin {
   flex-direction: column; gap: clamp(1rem, 4vh, 2.5rem);
   padding-block: 6rem 3rem;
 }
-html:not(.has-motion) :is(.hero__hint, .hero__corner, .progress, .ring-wrap) { display: none; }
-html:not(.has-motion) :is(.exp__line-fill, .contact__underline) { transform: none; }
-html:not(.has-motion) .skills__row {
+html.boot-stalled .hero__pin { flex-direction: column; gap: clamp(1rem, 4vh, 2.5rem); padding-block: 6rem 3rem; }
+html:is(.js-static, .has-motion) :is(.hero__hint, .hero__corner) { display: block; }
+html:not(.has-motion):is(.js-static, :not(.is-booting)) :is(.progress, .ring-wrap) { display: none; }
+html:not(.has-motion):is(.js-static, :not(.is-booting)) :is(.exp__line-fill, .contact__underline) { transform: none; }
+html:not(.has-motion):is(.js-static, :not(.is-booting)) .skills__row {
   flex-wrap: wrap; justify-content: center; gap: 0.55rem 1rem;
   padding-inline: 1rem; font-size: clamp(1.15rem, 4vw, 2.4rem);
 }
-html:not(.has-motion) .skills__row--alt { color: var(--muted); -webkit-text-stroke: 0; }
+html:not(.has-motion):is(.js-static, :not(.is-booting)) .skills__row--alt { color: var(--muted); -webkit-text-stroke: 0; }

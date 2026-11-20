@@ -78,15 +78,31 @@
     }
   }
 
-  /* ---------- static layout for reduced motion and short viewports ---------- */
-  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
+  // ---------- static layout for reduced motion and short viewports ----------
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    document.documentElement.classList.replace("is-booting", "boot-stalled");
+    // Static hero: show the architecture sketch below the headline instead of
+    // leaving an empty hero in place of the reveal.
+    document.getElementById("heroCode")?.setAttribute("data-static", "");
+    return;
+  }
 
   gsap.registerPlugin(ScrollTrigger);
+  document.documentElement.classList.remove("is-booting");
   const refreshEvents = "visibilitychange,DOMContentLoaded,load,resize";
   const motionQuery = window.matchMedia("(prefers-reduced-motion: no-preference) and (min-height: 600px)");
+  // The inline boot script owns this switch until the animation timeline does.
+  const motionListener = (event) => {
+    if (!document.documentElement.classList.contains("has-motion")) return;
+    document.documentElement.classList.toggle("js-motion", event.matches);
+    document.documentElement.classList.toggle("js-static", !event.matches);
+  };
+  motionQuery.addEventListener("change", motionListener);
   const sections = [...document.querySelectorAll("main > section")];
   let context;
   let activeSection;
+  let stopMotion = () => {};
+
 
   const rememberSection = () => {
     // A resize can trigger a scroll event before the media-query callback.
@@ -101,10 +117,12 @@
     const section = preserveSection && activeSection;
     if (motionQuery.matches) {
       ScrollTrigger.config({ autoRefreshEvents: refreshEvents });
-      context = gsap.context(() => enableMotion({ splitChars, splitWords, cells, HM_ROWS, HM_COLS }));
+      context = gsap.context(() => (stopMotion = enableMotion({ splitChars, splitWords, cells, HM_ROWS, HM_COLS })));
       ScrollTrigger.refresh();
     } else if (context) {
       context.revert();
+      stopMotion();
+      stopMotion = () => {};
       context = null;
       ScrollTrigger.config({ autoRefreshEvents: "none" });
       // Flush a resize refresh queued by the pinned layout before restoring
@@ -113,12 +131,51 @@
     } else {
       ScrollTrigger.config({ autoRefreshEvents: "none" });
     }
-    if (section) window.scrollTo(0, scrollY + section.getBoundingClientRect().top);
+    if (section) jumpTo(scrollY + section.getBoundingClientRect().top);
     rememberSection();
+  };
+
+  // Instant user-initiated jumps must not be smeared into a wheel-like glide,
+  // and the motion callback just told the layout where the user expects to be.
+  const jumpTo = (top) => {
+    ScrollTrigger.isScrolling = true;
+    window.scrollTo({ top, behavior: "instant" });
+    ScrollTrigger.isScrolling = false;
   };
 
   syncMotion(false);
   motionQuery.addEventListener("change", () => syncMotion(true));
+  // Enter on a focused anchor focuses its target. At a fragment landing, hand
+  // focus back to <body> so the link that was left behind is never visible.
+  const releaseFragmentLink = () => {
+    const landing = location.hash && document.getElementById(location.hash.slice(1));
+    if (landing && document.activeElement === landing && document.activeElement.matches("a[href^='#']")) document.activeElement.blur();
+  };
+  // Lenis restarts scroll processing after a click, which can blur a keyboard
+  // fragment target back to <body>. Put focus back on it in that case only.
+  let previousFocus = document.activeElement;
+
+  // Navigating to the page's own fragment focuses its first anchor on the very
+  // next frame. Clear that automatic focus, but leave any link the user reached
+  // by keyboard (or our skip link) focused, so it is never revealed by accident
+  // and never taken away from someone who needs it.
+  let userMovedFocus = false;
+  let autoFocusReleased = false;
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Tab" || event.key === "Enter" || event.key === " ") userMovedFocus = true;
+  });
+  document.addEventListener("focusin", (event) => {
+    if (autoFocusReleased || userMovedFocus || !(event.target instanceof HTMLAnchorElement)) return;
+    if (!event.target.closest("main a[href^='#']")) return;
+    autoFocusReleased = true;
+    event.target.blur();
+  });
+  // Some engines reveal and focus again after this frame; confirm once more.
+  window.addEventListener("load", () => {
+    const first = document.querySelector("main a[href^='#']:not(.skip-link)");
+    if (first?.hasAttribute("autofocus") || (document.activeElement === first && !userMovedFocus)) document.activeElement?.blur?.();
+  }, { once: true });
+  window.addEventListener("hashchange", () => requestAnimationFrame(releaseFragmentLink));
   window.addEventListener("scroll", rememberSection, { passive: true });
   window.addEventListener("load", () => {
     if (context) ScrollTrigger.refresh();
@@ -126,12 +183,16 @@
   });
 })(({ splitChars, splitWords, cells, HM_ROWS, HM_COLS }) => {
   document.documentElement.classList.add("has-motion");
-  const events = new AbortController();
-  const { signal } = events;
   const originals = new Map([...document.querySelectorAll(
     "#heroName, #statementText, .contact__line1, .contact__line2, [data-count], #ringPct"
   )].map((el) => [el, [...el.childNodes]]));
   const marqueeCopies = [];
+  // Undo listeners and wiring added here so a stop/start cycle never duplicates them.
+  const cleanups = [];
+  const on = (node, type, fn, options) => {
+    node.addEventListener(type, fn, options);
+    cleanups.push(() => node.removeEventListener(type, fn, options));
+  };
   const magnetic = document.querySelectorAll(".magnetic");
   let stopLenis = () => {};
 
@@ -142,22 +203,29 @@
     lenis.on("scroll", ScrollTrigger.update);
     const tick = (time) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
+    // Cancel pending wheel frames, but leave focus, fragments and scroll
+    // restoration to the browser. This also covers keyboard-activated links.
     const cancelWheel = () => {
-      if (lenis.isScrolling !== "smooth") return;
+      if (!lenis || lenis.isScrolling !== "smooth") return;
       lenis.stop();
       lenis.start();
     };
-    // Cancel pending wheel frames, but leave focus, fragments and scroll
-    // restoration to the browser. This also covers keyboard-activated links.
-    document.addEventListener("click", (event) => {
+    on(document, "click", (event) => {
       if (event.button !== 0 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
       if (event.target instanceof Element && event.target.closest('a[href^="#"]')) cancelWheel();
-    }, { capture: true, signal });
-    window.addEventListener("popstate", cancelWheel, { signal });
-    window.addEventListener("hashchange", cancelWheel, { signal });
+    }, { capture: true });
+    on(window, "popstate", cancelWheel, {});
+    on(window, "hashchange", cancelWheel, {});
     stopLenis = () => {
       gsap.ticker.remove(tick);
       lenis.destroy();
+    };
+
+    let resumeTimer = 0;
+    const pauseForHash = () => {
+      clearTimeout(resumeTimer);
+      lenis.stop();
+      resumeTimer = setTimeout(() => lenis.start(), 450);
     };
   }
 
@@ -457,7 +525,7 @@
     const dotY = gsap.quickTo(dot, "y", { duration: 0.08 });
 
     let cursorActive = false;
-    window.addEventListener("mousemove", (e) => {
+    on(window, "mousemove", (e) => {
       if (!cursorActive) {
         // jump straight to the pointer so the ring doesn't glide in from (0,0)
         cursorActive = true;
@@ -467,7 +535,7 @@
       }
       ringX(e.clientX); ringY(e.clientY);
       dotX(e.clientX); dotY(e.clientY);
-    }, { signal });
+    }, {});
 
     const labelFor = (el) => {
       const href = el.getAttribute("href") || "";
@@ -478,38 +546,39 @@
     };
 
     document.querySelectorAll("a, button").forEach((el) => {
-      el.addEventListener("mouseenter", () => {
+      on(el, "mouseenter", () => {
         cursor.classList.add("is-hover");
         label.textContent = labelFor(el);
-      }, { signal });
-      el.addEventListener("mouseleave", () => cursor.classList.remove("is-hover"), { signal });
+      }, {});
+      on(el, "mouseleave", () => cursor.classList.remove("is-hover"), {});
     });
 
     // magnetic pull
     magnetic.forEach((el) => {
       const strength = 0.35;
-      el.addEventListener("mousemove", (e) => {
+      on(el, "mousemove", (e) => {
         const r = el.getBoundingClientRect();
         gsap.to(el, {
           x: (e.clientX - r.left - r.width / 2) * strength,
           y: (e.clientY - r.top - r.height / 2) * strength,
           duration: 0.4, ease: "power3.out", overwrite: "auto",
         });
-      }, { signal });
-      el.addEventListener("mouseleave", () => {
+      }, {});
+      on(el, "mouseleave", () => {
         gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.35)", overwrite: "auto" });
-      }, { signal });
+      }, {});
     });
   }
 
   return () => {
-    events.abort();
     stopLenis();
+    for (const undo of cleanups.reverse()) undo();
     // Mouse events create magnetic tweens after context setup.
     gsap.killTweensOf(magnetic);
     gsap.set(magnetic, { clearProps: "transform" });
     for (const [el, nodes] of originals) el.replaceChildren(...nodes);
     marqueeCopies.forEach((copy) => copy.remove());
+    marqueeCopies.length = 0;
     document.getElementById("cursor").classList.remove("is-active", "is-hover");
     document.getElementById("cursorDot").classList.remove("is-active");
     document.documentElement.classList.remove("has-motion");

@@ -18,6 +18,25 @@
   <meta property="og:image:alt" content="Nyathani HariHaran — Python Backend &amp; AI Engineering" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#08080a" />
+  <!-- Decide the hero layout before the first paint: the reveal code renders
+       behind the name only when motion is available. -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var motion = window.matchMedia("(prefers-reduced-motion: no-preference) and (min-height: 600px)");
+
+      root.classList.add(motion.matches ? "js-motion" : "js-static");
+      // Re-evaluate while the animation libraries are still loading. The
+      // listener is dropped once main.js owns the switch.
+      var handle = function (event) {
+        if (root.classList.contains("has-motion")) return;
+        root.classList.toggle("js-motion", event.matches);
+        root.classList.toggle("js-static", !event.matches);
+      };
+      motion.addEventListener("change", handle);
+      root.classList.add("is-booting");
+    })();
+  </script>
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚡</text></svg>" />
 
