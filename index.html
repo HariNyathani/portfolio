@@ -4,9 +4,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Nyathani HariHaran — Software Engineer</title>
+  <title>Nyathani HariHaran — Python Backend &amp; AI Engineering</title>
   <meta name="description"
-    content="Software Engineer — Python, FastAPI, React, Flutter. Builder of dsabot.in and mytimer.in." />
+    content="Nyathani HariHaran builds Python backend APIs and works on prompt engineering, RAG, and automated LLM evaluation at Cognizant." />
+  <link rel="canonical" href="https://harinyathani.github.io/portfolio/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://harinyathani.github.io/portfolio/" />
+  <meta property="og:title" content="Nyathani HariHaran — Python Backend &amp; AI Engineering" />
+  <meta property="og:description" content="Python backend APIs, prompt engineering, RAG, and automated LLM evaluation." />
+  <meta property="og:image" content="https://harinyathani.github.io/portfolio/assets/social-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Nyathani HariHaran — Python Backend &amp; AI Engineering" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#08080a" />
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚡</text></svg>" />
 
@@ -29,51 +40,52 @@
   <div class="cursor" aria-hidden="true" id="cursor"><span class="cursor__label" id="cursorLabel"></span></div>
   <div class="cursor-dot" aria-hidden="true" id="cursorDot"></div>
 
+  <a href="#main" class="skip-link mono">Skip to content</a>
   <header class="header">
-    <a href="#hero" class="header__logo magnetic" data-scroll-to>NH<span class="accent">.</span></a>
-    <nav class="header__nav mono">
-      <a href="#work" class="magnetic" data-scroll-to>work</a>
-      <a href="#experience" class="magnetic" data-scroll-to>experience</a>
-      <a href="#contact" class="magnetic" data-scroll-to>contact</a>
+    <a href="#hero" class="header__logo magnetic" aria-label="Back to top">NH<span class="accent">.</span></a>
+    <nav class="header__nav mono" aria-label="Main navigation">
+      <a href="#work" class="magnetic">work</a>
+      <a href="#experience" class="magnetic">experience</a>
+      <a href="#contact" class="magnetic">contact</a>
     </nav>
     <a href="mailto:harinyathani10@gmail.com" class="header__cta mono magnetic">
       <span class="pulse-dot"></span>available for work
     </a>
   </header>
 
-  <main>
+  <main id="main" tabindex="-1">
 
     <!-- ======== 01 / HERO ======== -->
-    <section class="hero" id="hero">
+    <section class="hero" id="hero" tabindex="-1">
       <div class="hero__pin">
 
-        <!-- code block revealed behind the name -->
-        <div class="hero__code mono" id="heroCode" aria-hidden="true">
-          <div class="codewin">
-            <div class="codewin__bar">
-              <span class="codewin__dot"></span><span class="codewin__dot"></span><span class="codewin__dot"></span>
-              <span class="codewin__title">architecture.py — dsabot.in</span>
-            </div>
-            <pre
-              class="codewin__body"><code><span class="code-line"><span class="c"># multi-user backend · 4-stage NLP pipeline</span></span>
-<span class="code-line"><span class="k">async def</span> <span class="f">resolve_submission</span>(msg: <span class="t">Message</span>) -&gt; <span class="t">Log</span>:</span>
-<span class="code-line">    parsed  = nlp.<span class="f">extract</span>(msg.content)          <span class="c"># RapidFuzz · regex</span></span>
-<span class="code-line">    problem = <span class="k">await</span> registry.<span class="f">resolve</span>(parsed)    <span class="c"># LeetCode · Codeforces</span></span>
-<span class="code-line">    log     = <span class="k">await</span> db.<span class="f">commit_log</span>(problem, user=msg.author)</span>
-<span class="code-line">    <span class="k">await</span> srs.<span class="f">schedule_review</span>(log)              <span class="c"># spaced repetition</span></span>
-<span class="code-line">    <span class="k">await</span> coach.<span class="f">gemini_feedback</span>(log)            <span class="c"># AI coaching</span></span>
-<span class="code-line">    <span class="k">return</span> log  <span class="c"># → PostgreSQL · async · Dockerized</span></span></code></pre>
-          </div>
-        </div>
-
-        <!-- the doors -->
+        <!-- The name comes first in reading order; the code sits behind it when animated. -->
         <div class="hero__type">
           <p class="hero__eyebrow mono" id="heroEyebrow">NYATHANI — SOFTWARE ENGINEER</p>
           <h1 class="hero__name" id="heroName" aria-label="HariHaran">HARIHARAN</h1>
-          <p class="hero__sub mono" id="heroSub">python · fastapi · react · flutter · postgresql</p>
+          <p class="hero__sub mono" id="heroSub">python backend · prompt engineering · llm evaluation</p>
         </div>
 
-        <div class="hero__hint mono" id="heroHint">
+        <div class="hero__code mono" id="heroCode">
+          <div class="codewin">
+            <div class="codewin__bar">
+              <span class="codewin__dot" aria-hidden="true"></span><span class="codewin__dot" aria-hidden="true"></span><span class="codewin__dot" aria-hidden="true"></span>
+              <span class="codewin__title">dsabot.in — architecture sketch</span>
+            </div>
+            <pre class="codewin__body"><code><span class="code-line"><span class="k">async def</span> <span class="f">log_practice</span>(user, text):</span>
+<span class="code-line">    <span class="c"># Parse free text with regex + RapidFuzz</span></span>
+<span class="code-line">    entry = <span class="f">parse</span>(text)</span>
+<span class="code-line">    log = <span class="k">await</span> <span class="f">resolve</span>(entry)</span>
+<span class="code-line">    <span class="k">await</span> postgres.<span class="f">save</span>(user, log)</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="c"># Separate workflows, not part of each log:</span></span>
+<span class="code-line"><span class="t">catalogs</span> = leetcode_graphql + codeforces_rest</span>
+<span class="code-line"><span class="t">reviews</span> = spaced_repetition + timezone_reminders</span>
+<span class="code-line"><span class="t">weekly_insights</span> = optional_gemini</span></code></pre>
+          </div>
+        </div>
+
+        <div class="hero__hint mono" id="heroHint" aria-hidden="true">
           <span>scroll to open</span>
           <span class="hero__hint-line"></span>
         </div>
@@ -86,16 +98,15 @@
     <!-- ======== 02 / STATEMENT ======== -->
     <section class="statement" id="statement">
       <div class="statement__pin">
-        <p class="statement__label mono">01 — WHO I AM</p>
-        <p class="statement__text" id="statementText">I engineered my way from operations into software, independently
-          shipping a <em>30K+ LOC</em> cross-platform DSA platform and a production tool used by <em>40+ people
-            daily</em>, while training in <em>AI &amp; LLM workflows</em> on a Google-client initiative at Cognizant.
-          <em>150+ DSA problems</em> deep and still counting.</p>
+        <h2 class="statement__label mono">01 — WHO I AM</h2>
+        <p class="statement__text" id="statementText">I engineered my way from operations into software by building a
+          <em>cross-platform DSA platform</em>. At Cognizant, I work on <em>prompt engineering and automated LLM evaluation</em>,
+          using RAG for policy context, structured outputs for human review, and multimodal Gemini to evaluate video.</p>
       </div>
     </section>
 
     <!-- ======== 03 / PROJECT 1 — DSA PLATFORM ======== -->
-    <section class="proj1" id="work">
+    <section class="proj1" id="work" tabindex="-1">
       <div class="proj1__pin">
         <p class="section-label mono"><span class="accent">02</span> — SELECTED WORK / 01</p>
 
@@ -103,57 +114,57 @@
           <div class="glass-card__head">
             <div>
               <h2 class="glass-card__title">DSA Accountability<br />Platform</h2>
-              <p class="glass-card__sub mono">web · mobile · discord bot — <a class="accent-link magnetic"
+              <p class="glass-card__sub mono">Web · Android · Discord Bot — <a class="accent-link magnetic"
                   href="https://dsabot.in" target="_blank" rel="noopener">dsabot.in</a></p>
             </div>
             <span class="glass-card__year mono">2026</span>
           </div>
 
-          <div class="heatmap" id="heatmap" aria-label="Contribution activity heatmap"></div>
-          <p class="heatmap__caption mono">discord messages → 4-stage NLP → structured logs → SRS review queue</p>
+          <div class="heatmap" id="heatmap" aria-hidden="true"></div>
+          <p class="heatmap__caption mono">Illustrative heatmap · Eligible LeetCode logs feed the spaced-repetition queue.</p>
 
           <div class="tags" id="dsaTags">
             <span class="tag mono">Python</span>
             <span class="tag mono">FastAPI</span>
+            <span class="tag mono">React</span>
             <span class="tag mono">Flutter</span>
-            <span class="tag mono">GraphQL</span>
-            <span class="tag mono">PostgreSQL</span>
-            <span class="tag mono">Docker</span>
+            <span class="tag mono">PostgreSQL / Supabase</span>
+            <span class="tag mono">Discord.py</span>
           </div>
 
           <div class="metrics" id="dsaMetrics">
             <div class="metric">
-              <span class="metric__num"><span data-count="30" data-suffix="K+">0K+</span></span>
-              <span class="metric__cap mono">lines of code</span>
+              <span class="metric__num"><span data-count="3">3</span></span>
+              <span class="metric__cap mono">shared logging clients</span>
             </div>
             <div class="metric">
-              <span class="metric__num"><span data-count="4" data-suffix="">0</span></span>
-              <span class="metric__cap mono">stage NLP pipeline</span>
+              <span class="metric__num"><span data-count="2">2</span></span>
+              <span class="metric__cap mono">problem catalog APIs</span>
             </div>
             <div class="metric">
-              <span class="metric__num"><span data-count="1" data-prefix="&lt;" data-suffix="ms">&lt;0ms</span></span>
-              <span class="metric__cap mono">cold-start render</span>
+              <span class="metric__num">Weekly</span>
+              <span class="metric__cap mono">optional Gemini insights</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ======== 04 / PROJECT 2 — MYTIMER ======== -->
+    <!-- ======== 04 / PROJECT 2 — EPUB READER ======== -->
     <section class="proj2">
       <div class="proj2__pin">
         <p class="section-label mono"><span class="accent">03</span> — SELECTED WORK / 02</p>
 
         <div class="proj2__stage">
           <!-- phase A: the ring -->
-          <div class="ring-wrap" id="ringWrap">
-            <svg class="ring" viewBox="0 0 300 300" aria-hidden="true">
+          <div class="ring-wrap" id="ringWrap" aria-hidden="true">
+            <svg class="ring" viewBox="0 0 300 300">
               <circle class="ring__track" cx="150" cy="150" r="130" />
               <circle class="ring__fill" id="ringFill" cx="150" cy="150" r="130" />
             </svg>
             <div class="ring__center">
               <span class="ring__pct mono" id="ringPct">00%</span>
-              <span class="ring__cap mono">session progress</span>
+              <span class="ring__cap mono">reading progress</span>
             </div>
           </div>
 
@@ -161,20 +172,18 @@
           <div class="term" id="term">
             <div class="term__bar mono">
               <span class="codewin__dot"></span><span class="codewin__dot"></span><span class="codewin__dot"></span>
-              <span class="codewin__title">mytimer.in — production</span>
+              <span class="codewin__title">librea — project outline</span>
             </div>
             <div class="term__body mono">
-              <p class="term__line" id="t1"><span class="accent">$</span> mytimer --stats</p>
-              <p class="term__line" id="t2">├─ daily_active_users ..... <span class="accent big-stat"><span
-                    data-count="40" data-suffix="+">0+</span></span></p>
-              <p class="term__line" id="t3">├─ modes .................. countdown · stopwatch · pomodoro</p>
-              <p class="term__line" id="t4">├─ picture_in_picture ..... always-on-top floating windows</p>
-              <p class="term__line" id="t5">├─ stack .................. vanilla JS · zero dependencies</p>
-              <p class="term__line" id="t6">└─ spreadsheets_replaced .. <span class="accent">all of them</span></p>
-              <h3 class="term__title">MyTimer<span class="accent">.in</span></h3>
-              <p class="term__sub mono">productivity timer &amp; utilization tracker — adopted by 40+ operators at
-                Cognizant — <a class="accent-link magnetic" href="https://mytimer.in" target="_blank"
-                  rel="noopener">mytimer.in</a></p>
+              <p class="term__line"><span class="accent">$</span> cat architecture.txt</p>
+              <p class="term__line">├─ frontend: Next.js · TypeScript</p>
+              <p class="term__line">├─ accounts &amp; progress: Supabase</p>
+              <p class="term__line">├─ authenticated EPUB streaming: Cloudflare R2</p>
+              <p class="term__line">└─ offline reading: IndexedDB</p>
+              <h2 class="term__title">Librea<span class="accent">.</span></h2>
+              <p class="term__sub mono">An installable EPUB reader with an approval-gated library, offline reading, and synced
+                reading progress. <a class="accent-link magnetic" href="https://github.com/HariNyathani/EBook-Reader"
+                  target="_blank" rel="noopener">View source on GitHub</a></p>
             </div>
           </div>
         </div>
@@ -182,8 +191,8 @@
     </section>
 
     <!-- ======== 05 / EXPERIENCE ======== -->
-    <section class="exp" id="experience">
-      <p class="section-label mono exp__label"><span class="accent">04</span> — EXPERIENCE</p>
+    <section class="exp" id="experience" tabindex="-1">
+      <h2 class="section-label mono exp__label"><span class="accent">04</span> — EXPERIENCE</h2>
 
       <div class="exp__rail">
         <div class="exp__line">
@@ -192,15 +201,19 @@
         <div class="exp__node" id="expNode"></div>
 
         <article class="exp-card" data-exp>
-          <p class="exp-card__date mono">JUL 2025 — PRESENT</p>
-          <h3 class="exp-card__role">Process Executive — Prompt Factory</h3>
-          <p class="exp-card__org mono accent">Cognizant · Hyderabad</p>
+          <p class="exp-card__date mono">July 2025 – Present</p>
+          <h3 class="exp-card__role">Prompt Engineer – Prompt Factory</h3>
+          <p class="exp-card__org mono accent">Cognizant · Hyderabad, India</p>
           <ul class="exp-card__list">
-            <li>Shipped <strong>mytimer.in</strong> internally — adopted by 40+ operators, killing manual spreadsheet
-              tracking.</li>
-            <li>Processed <strong>50,000+</strong> content-review transactions within SLA &amp; policy compliance.</li>
-            <li>Selected for an AI-ops initiative on a <strong>Google client engagement</strong> — trained in Prompt
-              Engineering, RAG &amp; NLP; analyzing workflow exceptions to drive AI-assisted automation.</li>
+            <li>Built reusable components for the Prompt Factory auto-rater: policy-rule routing, <strong>RAG for policy
+                context</strong>, and schema-defined JSON outputs for human review.</li>
+            <li>Consolidated about <strong>320 policy checks into 129 atomic rules</strong> (roughly 60% fewer). Wrote
+              few-shot prompts with explicit flag/no-flag criteria for shared and workflow-specific rules.</li>
+            <li>Automated concurrent LLM batch evaluation in Python. Reached <strong>99% accuracy on selected categories</strong>
+              against human-reviewed labels and refined prompts using per-rule error analysis.</li>
+            <li>Integrated multimodal Gemini into an auto-rater that evaluated <strong>50,000+ assets across 12+ workflows</strong>,
+              reducing manual review time. For YouTube ads, it compared original and enhanced video to flag clipped text,
+              audio cuts, and blur.</li>
           </ul>
         </article>
 
@@ -209,15 +222,15 @@
           <h3 class="exp-card__role">Full Stack Development Intern</h3>
           <p class="exp-card__org mono accent">Teachnook · Hyderabad</p>
           <ul class="exp-card__list">
-            <li>Built full-stack apps with <strong>Node.js, Express &amp; MongoDB</strong> — JWT auth, RESTful APIs,
-              responsive UI, cloud-deployed.</li>
+            <li>Built and deployed full-stack apps with <strong>Node.js, Express.js &amp; MongoDB</strong>, with REST APIs,
+              JWT authentication, and responsive interfaces.</li>
           </ul>
         </article>
 
         <article class="exp-card" data-exp>
           <p class="exp-card__date mono">2020 — 2024</p>
           <h3 class="exp-card__role">B.Tech, Computer Science</h3>
-          <p class="exp-card__org mono accent">Kakatiya Institute of Technology &amp; Science · Warangal</p>
+          <p class="exp-card__org mono accent">Kakatiya Institute of Technology and Science · Warangal</p>
           <ul class="exp-card__list">
             <li>Fundamentals in DSA, OOP, DBMS &amp; systems — <strong>150+ problems</strong> solved via Striver's A2Z
               sheet.</li>
@@ -235,15 +248,15 @@
         <span class="skills__item">Flutter</span><span class="skills__sep">✦</span>
         <span class="skills__item">PostgreSQL</span><span class="skills__sep">✦</span>
         <span class="skills__item">GraphQL</span><span class="skills__sep">✦</span>
-        <span class="skills__item">Docker</span><span class="skills__sep">✦</span>
+        <span class="skills__item">Gemini</span><span class="skills__sep">✦</span>
         <span class="skills__item">SQL</span><span class="skills__sep">✦</span>
       </div>
       <div class="skills__row skills__row--alt" id="marqueeB">
         <span class="skills__item">REST APIs</span><span class="skills__sep">✦</span>
         <span class="skills__item">JWT Auth</span><span class="skills__sep">✦</span>
-        <span class="skills__item">CI/CD</span><span class="skills__sep">✦</span>
+        <span class="skills__item">LLM Evaluation</span><span class="skills__sep">✦</span>
         <span class="skills__item">Discord.py</span><span class="skills__sep">✦</span>
-        <span class="skills__item">Pandas</span><span class="skills__sep">✦</span>
+        <span class="skills__item">Structured Outputs</span><span class="skills__sep">✦</span>
         <span class="skills__item">MongoDB</span><span class="skills__sep">✦</span>
         <span class="skills__item">RAG</span><span class="skills__sep">✦</span>
         <span class="skills__item">Prompt Engineering</span><span class="skills__sep">✦</span>
@@ -251,7 +264,7 @@
     </section>
 
     <!-- ======== 07 / CONTACT ======== -->
-    <section class="contact" id="contact">
+    <section class="contact" id="contact" tabindex="-1">
       <p class="section-label mono"><span class="accent">05</span> — NEXT</p>
 
       <a href="mailto:harinyathani10@gmail.com" class="contact__big magnetic" id="contactBig"
@@ -275,7 +288,7 @@
       <footer class="footer mono">
         <span>© 2026 Nyathani HariHaran</span>
         <span>Hyderabad, India</span>
-        <span>designed &amp; engineered by hand<span class="accent"> ⚡</span></span>
+        <span>Built with HTML, CSS &amp; GSAP<span class="accent"> ⚡</span></span>
       </footer>
     </section>
 

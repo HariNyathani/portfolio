@@ -4,10 +4,8 @@
    scrollbar position, so scrolling up reverses it perfectly.
    ============================================================ */
 
-(() => {
+((enableMotion) => {
   "use strict";
-
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------- helpers ---------- */
 
@@ -25,6 +23,7 @@
     return [...text].map((ch) => {
       const span = document.createElement("span");
       span.className = "char";
+      span.setAttribute("aria-hidden", "true");
       span.textContent = ch === " " ? " " : ch;
       el.appendChild(span);
       return span;
@@ -79,30 +78,54 @@
     }
   }
 
-  /* ---------- reduced motion: static site, everything visible ---------- */
-  if (reduced || typeof gsap === "undefined") {
-    document.documentElement.classList.add("reduced-motion");
-    document.querySelectorAll("[data-count]").forEach((el) => {
-      el.textContent =
-        (el.dataset.prefix || "") + el.dataset.count + (el.dataset.suffix || "");
-    });
-    return;
-  }
+  /* ---------- static layout for reduced motion and short viewports ---------- */
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
 
   gsap.registerPlugin(ScrollTrigger);
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: no-preference) and (min-height: 600px)");
+  let context;
+
+  const syncMotion = (preserveSection) => {
+    // Pin spacers change document height. Keep the current section on screen
+    // when a preference or orientation change adds or removes those spacers.
+    const section = preserveSection && [...document.querySelectorAll("main > section")]
+      .find((el) => el.getBoundingClientRect().bottom > 90);
+    if (motionQuery.matches) {
+      context = gsap.context(() => enableMotion({ splitChars, splitWords, cells, HM_ROWS, HM_COLS }));
+      ScrollTrigger.refresh();
+    } else if (context) {
+      context.revert();
+      context = null;
+    }
+    if (section) window.scrollTo(0, scrollY + section.getBoundingClientRect().top);
+  };
+
+  syncMotion(false);
+  motionQuery.addEventListener("change", () => syncMotion(true));
+  window.addEventListener("load", () => { if (context) ScrollTrigger.refresh(); });
+})(({ splitChars, splitWords, cells, HM_ROWS, HM_COLS }) => {
+  document.documentElement.classList.add("has-motion");
+  const events = new AbortController();
+  const { signal } = events;
+  const originals = new Map([...document.querySelectorAll(
+    "#heroName, #statementText, .contact__line1, .contact__line2, [data-count], #ringPct"
+  )].map((el) => [el, [...el.childNodes]]));
+  const marqueeCopies = [];
+  const magnetic = document.querySelectorAll(".magnetic");
+  let stopLenis = () => {};
 
   /* ---------- smooth scroll (Lenis) driving ScrollTrigger ---------- */
-  const lenis = new Lenis({ lerp: 0.11, wheelMultiplier: 1 });
-  lenis.on("scroll", ScrollTrigger.update);
-  gsap.ticker.add((time) => lenis.raf(time * 1000));
-  gsap.ticker.lagSmoothing(0);
-
-  document.querySelectorAll("[data-scroll-to]").forEach((a) => {
-    a.addEventListener("click", (e) => {
-      e.preventDefault();
-      lenis.scrollTo(a.getAttribute("href"), { duration: 1.6 });
-    });
-  });
+  // Use native anchors and focus; Lenis smooths wheel input only.
+  if (typeof Lenis !== "undefined") {
+    const lenis = new Lenis({ lerp: 0.11, wheelMultiplier: 1 });
+    lenis.on("scroll", ScrollTrigger.update);
+    const tick = (time) => lenis.raf(time * 1000);
+    gsap.ticker.add(tick);
+    stopLenis = () => {
+      gsap.ticker.remove(tick);
+      lenis.destroy();
+    };
+  }
 
   /* ---------- global progress bar ---------- */
   gsap.to("#progressBar", {
@@ -119,7 +142,7 @@
   const mid = (nameChars.length - 1) / 2;
   const codeLines = gsap.utils.toArray(".code-line");
 
-  gsap.set("#heroCode", { opacity: 0 });
+  gsap.set("#heroCode", { autoAlpha: 0 });
   gsap.set(codeLines, { opacity: 0, y: 18, filter: "blur(6px)" });
 
   const heroTl = gsap.timeline({
@@ -150,11 +173,14 @@
       filter: "blur(2px)",
       duration: 1,
     }, 0.05)
-    // the code block glows into place behind them
-    .to("#heroCode", { opacity: 1, duration: 0.35 }, 0.28)
+    // The innermost letters only travel 28vw. Fade the whole heading layer
+    // out during the reveal so none remain visible at the code hold/unpin.
+    // Keep this in the scrubbed timeline so reverse scrolling restores it.
+    .to(".hero__type", { opacity: 0, duration: 0.36 }, 0.34)
+    .to("#heroCode", { autoAlpha: 1, duration: 0.35 }, 0.28)
     .to(codeLines, {
       opacity: 1, y: 0, filter: "blur(0px)",
-      stagger: 0.07, duration: 0.5,
+      stagger: 0.055, duration: 0.5,
     }, 0.42)
     .to(["#heroCornerL", "#heroCornerR"], { opacity: 0, duration: 0.2 }, 0.5)
     // brief hold with the code glowing; the unpin scrolls it away naturally
@@ -164,7 +190,7 @@
      02 / STATEMENT — word-by-word mask wipe
      ============================================================ */
   const words = splitWords(document.getElementById("statementText"));
-  gsap.set(words, { opacity: 0.12 });
+  gsap.set(words, { opacity: 0.52 });
 
   const stTl = gsap.timeline({
     defaults: { ease: "none" },
@@ -207,7 +233,9 @@
     }, pos);
   };
 
-  gsap.set("#dsaCard", { y: 90, opacity: 0, rotateX: 6, transformPerspective: 900 });
+  // The Work anchor lands at the start of this pin, so the heading and link
+  // must already be visible before the heatmap, tags, and metrics reveal.
+  gsap.set("#dsaCard", { y: 18, opacity: 1, rotateX: 3, transformPerspective: 900 });
   gsap.set(cells, { scale: 0, opacity: 0 });
   gsap.set(tags, { opacity: 0 });
   gsap.set(".metric", { y: 40, opacity: 0 });
@@ -259,11 +287,10 @@
   const ringFill = document.getElementById("ringFill");
   const ringPct = document.getElementById("ringPct");
   const CIRC = 2 * Math.PI * 130;
-  ringFill.style.strokeDasharray = CIRC;
-  ringFill.style.strokeDashoffset = CIRC;
+  gsap.set(ringFill, { strokeDasharray: CIRC, strokeDashoffset: CIRC });
 
   const termLines = gsap.utils.toArray(".term__line");
-  gsap.set("#term", { autoAlpha: 0, y: 60, scale: 0.94 });
+  gsap.set("#term", { opacity: 0, y: 60, scale: 0.94, pointerEvents: "none" });
   gsap.set(termLines, { opacity: 0, x: -14 });
   gsap.set([".term__title", ".term__sub"], { opacity: 0, y: 24 });
 
@@ -293,11 +320,11 @@
     // at 100% the ring flashes and hands off to the terminal
     .to(".ring__fill", { strokeWidth: 10, duration: 0.12 }, 1.6)
     .to("#ringWrap", { scale: 1.6, autoAlpha: 0, filter: "blur(10px)", duration: 0.4 }, 1.75)
-    .to("#term", { autoAlpha: 1, y: 0, scale: 1, duration: 0.45 }, 1.95)
+    .to("#term", { opacity: 1, y: 0, scale: 1, duration: 0.45 }, 1.95)
     .to(termLines, { opacity: 1, x: 0, duration: 0.3, stagger: 0.12 }, 2.25)
-    .to([".term__title", ".term__sub"], { opacity: 1, y: 0, duration: 0.4, stagger: 0.1 }, 2.9);
+    .to([".term__title", ".term__sub"], { opacity: 1, y: 0, duration: 0.4, stagger: 0.1 }, 2.9)
+    .set("#term", { pointerEvents: "auto" }, 3.35);
 
-  counters(document.getElementById("term")).forEach((el) => countTween(el, 2.4, p2Tl, 0.5));
   p2Tl.to({}, { duration: 0.4 });
 
   /* ============================================================
@@ -320,12 +347,11 @@
   });
 
   gsap.utils.toArray("[data-exp]").forEach((card) => {
-    const fromLeft = !card.classList.contains("exp-card--right") || window.innerWidth < 760;
     gsap.from(card, {
-      x: fromLeft ? -90 : 90,
+      x: () => (!card.classList.contains("exp-card--right") || innerWidth <= 900) ? -90 : 90,
       opacity: 0,
       ease: "none",
-      scrollTrigger: { trigger: card, start: "top 88%", end: "top 52%", scrub: true },
+      scrollTrigger: { trigger: card, start: "top 88%", end: "top 52%", scrub: true, invalidateOnRefresh: true },
     });
   });
 
@@ -334,7 +360,15 @@
      ============================================================ */
   ["marqueeA", "marqueeB"].forEach((id) => {
     const row = document.getElementById(id);
-    row.innerHTML = row.innerHTML + row.innerHTML + row.innerHTML;
+    const items = [...row.children];
+    for (let i = 0; i < 2; i++) {
+      items.forEach((item) => {
+        const copy = item.cloneNode(true);
+        copy.setAttribute("aria-hidden", "true");
+        row.appendChild(copy);
+        marqueeCopies.push(copy);
+      });
+    }
   });
   gsap.fromTo("#marqueeA", { xPercent: 0 }, {
     xPercent: -22, ease: "none",
@@ -355,7 +389,7 @@
   gsap.set(bigChars, { yPercent: 110, opacity: 0 });
   // the container takes the scrubbed y so the magnetic effect owns the links' transforms
   gsap.set("#contactLinks", { y: 34 });
-  gsap.set(".contact__link", { autoAlpha: 0 });
+  gsap.set(".contact__link", { opacity: 0 });
   gsap.set(".footer", { opacity: 0 });
 
   const cTl = gsap.timeline({
@@ -372,7 +406,7 @@
     .to(bigChars, { yPercent: 0, opacity: 1, duration: 0.8, stagger: 0.06 }, 0)
     .to("#contactUnderline", { scaleX: 1, duration: 0.7 }, 0.7)
     .to("#contactLinks", { y: 0, duration: 0.5 }, 1.1)
-    .to(".contact__link", { autoAlpha: 1, duration: 0.4, stagger: 0.1 }, 1.1)
+    .to(".contact__link", { opacity: 1, duration: 0.4, stagger: 0.1 }, 1.1)
     .to(".footer", { opacity: 1, duration: 0.3 }, 1.4);
 
   /* ============================================================
@@ -399,7 +433,7 @@
       }
       ringX(e.clientX); ringY(e.clientY);
       dotX(e.clientX); dotY(e.clientY);
-    });
+    }, { signal });
 
     const labelFor = (el) => {
       const href = el.getAttribute("href") || "";
@@ -413,27 +447,37 @@
       el.addEventListener("mouseenter", () => {
         cursor.classList.add("is-hover");
         label.textContent = labelFor(el);
-      });
-      el.addEventListener("mouseleave", () => cursor.classList.remove("is-hover"));
+      }, { signal });
+      el.addEventListener("mouseleave", () => cursor.classList.remove("is-hover"), { signal });
     });
 
     // magnetic pull
-    document.querySelectorAll(".magnetic").forEach((el) => {
+    magnetic.forEach((el) => {
       const strength = 0.35;
       el.addEventListener("mousemove", (e) => {
         const r = el.getBoundingClientRect();
         gsap.to(el, {
           x: (e.clientX - r.left - r.width / 2) * strength,
           y: (e.clientY - r.top - r.height / 2) * strength,
-          duration: 0.4, ease: "power3.out",
+          duration: 0.4, ease: "power3.out", overwrite: "auto",
         });
-      });
+      }, { signal });
       el.addEventListener("mouseleave", () => {
-        gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.35)" });
-      });
+        gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.35)", overwrite: "auto" });
+      }, { signal });
     });
   }
 
-  /* fonts settle → recalc pin distances */
-  window.addEventListener("load", () => ScrollTrigger.refresh());
-})();
+  return () => {
+    events.abort();
+    stopLenis();
+    // Mouse events create magnetic tweens after context setup.
+    gsap.killTweensOf(magnetic);
+    gsap.set(magnetic, { clearProps: "transform" });
+    for (const [el, nodes] of originals) el.replaceChildren(...nodes);
+    marqueeCopies.forEach((copy) => copy.remove());
+    document.getElementById("cursor").classList.remove("is-active", "is-hover");
+    document.getElementById("cursorDot").classList.remove("is-active");
+    document.documentElement.classList.remove("has-motion");
+  };
+});
