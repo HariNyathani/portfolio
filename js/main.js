@@ -82,6 +82,7 @@
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
 
   gsap.registerPlugin(ScrollTrigger);
+  const refreshEvents = "visibilitychange,DOMContentLoaded,load,resize";
   const motionQuery = window.matchMedia("(prefers-reduced-motion: no-preference) and (min-height: 600px)");
   const sections = [...document.querySelectorAll("main > section")];
   let context;
@@ -99,11 +100,18 @@
     // when a preference or orientation change adds or removes those spacers.
     const section = preserveSection && activeSection;
     if (motionQuery.matches) {
+      ScrollTrigger.config({ autoRefreshEvents: refreshEvents });
       context = gsap.context(() => enableMotion({ splitChars, splitWords, cells, HM_ROWS, HM_COLS }));
       ScrollTrigger.refresh();
     } else if (context) {
       context.revert();
       context = null;
+      ScrollTrigger.config({ autoRefreshEvents: "none" });
+      // Flush a resize refresh queued by the pinned layout before restoring
+      // the section in the now-shorter static document.
+      ScrollTrigger.refresh();
+    } else {
+      ScrollTrigger.config({ autoRefreshEvents: "none" });
     }
     if (section) window.scrollTo(0, scrollY + section.getBoundingClientRect().top);
     rememberSection();
