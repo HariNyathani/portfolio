@@ -83,13 +83,21 @@
 
   gsap.registerPlugin(ScrollTrigger);
   const motionQuery = window.matchMedia("(prefers-reduced-motion: no-preference) and (min-height: 600px)");
+  const sections = [...document.querySelectorAll("main > section")];
   let context;
+  let activeSection;
+
+  const rememberSection = () => {
+    // A resize can trigger a scroll event before the media-query callback.
+    // Keep the last section seen with the old layout until the switch finishes.
+    if (motionQuery.matches !== Boolean(context)) return;
+    activeSection = sections.find((el) => el.getBoundingClientRect().bottom > 90);
+  };
 
   const syncMotion = (preserveSection) => {
     // Pin spacers change document height. Keep the current section on screen
     // when a preference or orientation change adds or removes those spacers.
-    const section = preserveSection && [...document.querySelectorAll("main > section")]
-      .find((el) => el.getBoundingClientRect().bottom > 90);
+    const section = preserveSection && activeSection;
     if (motionQuery.matches) {
       context = gsap.context(() => enableMotion({ splitChars, splitWords, cells, HM_ROWS, HM_COLS }));
       ScrollTrigger.refresh();
@@ -98,11 +106,16 @@
       context = null;
     }
     if (section) window.scrollTo(0, scrollY + section.getBoundingClientRect().top);
+    rememberSection();
   };
 
   syncMotion(false);
   motionQuery.addEventListener("change", () => syncMotion(true));
-  window.addEventListener("load", () => { if (context) ScrollTrigger.refresh(); });
+  window.addEventListener("scroll", rememberSection, { passive: true });
+  window.addEventListener("load", () => {
+    if (context) ScrollTrigger.refresh();
+    rememberSection();
+  });
 })(({ splitChars, splitWords, cells, HM_ROWS, HM_COLS }) => {
   document.documentElement.classList.add("has-motion");
   const events = new AbortController();
@@ -121,6 +134,19 @@
     lenis.on("scroll", ScrollTrigger.update);
     const tick = (time) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
+    const cancelWheel = () => {
+      if (lenis.isScrolling !== "smooth") return;
+      lenis.stop();
+      lenis.start();
+    };
+    // Cancel pending wheel frames, but leave focus, fragments and scroll
+    // restoration to the browser. This also covers keyboard-activated links.
+    document.addEventListener("click", (event) => {
+      if (event.button !== 0 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (event.target instanceof Element && event.target.closest('a[href^="#"]')) cancelWheel();
+    }, { capture: true, signal });
+    window.addEventListener("popstate", cancelWheel, { signal });
+    window.addEventListener("hashchange", cancelWheel, { signal });
     stopLenis = () => {
       gsap.ticker.remove(tick);
       lenis.destroy();
